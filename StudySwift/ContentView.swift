@@ -8,8 +8,26 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var count = 0
+    
     var body: some View {
-        Text("hello")
+        VStack(spacing: 20) {
+            Text("\(count)")
+            
+            HStack {
+                Button("-") {
+                    count -= 1
+                }
+                Button("+") {
+                    count += 1
+                }
+            }
+            
+            HStack {
+                UserCard(name: "chaeyn")
+                UserCard(name: "jdw09")
+            }
+        }
     }
     
     // immutable (const)
@@ -42,6 +60,14 @@ struct ContentView: View {
         case failure
     }
 
+}
+
+struct UserCard: View {
+    let name: String
+    
+    var body: some View {
+        Text(name)
+    }
 }
 
 
