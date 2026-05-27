@@ -7,21 +7,13 @@
 
 import SwiftUI
 
-struct Pokemon: Decodable {
-    let id: Int
-    let name: String
-    let image: String
-    let types: [String]
-    let height: Int
-    let weight: Int
-    let description: String
-}
-
 struct ContentView: View {
     @State private var name = ""
     @State private var pokemon: Pokemon?
     @State private var isLoading: Bool = false
     @State private var errorText: String?
+    
+    private let api = PokemonAPI()
     
     var body: some View {
         HStack (spacing: 10) {
@@ -63,24 +55,12 @@ struct ContentView: View {
         errorText = ""
         
         do {
-            pokemon = try await fetchPokemon(name: name)
+            pokemon = try await api.fetchPokemon(name: name)
         } catch {
             errorText = "포켓몬을 찾을 수 없습니다."
         }
         
         isLoading = false
-    }
-
-    func fetchPokemon(name: String) async throws -> Pokemon {
-        var components = URLComponents(string: "https://pokemon-api.chaeyn.com/pokemon")!
-        
-        components.queryItems = [
-            URLQueryItem(name: "name", value: name)
-        ]
-
-        let (data, _) = try await URLSession.shared.data(from: components.url!)
-
-        return try JSONDecoder().decode(Pokemon.self, from: data)
     }
 }
 
