@@ -19,10 +19,13 @@ struct ContentView: View {
         HStack (spacing: 10) {
             TextField("검색할 포켓몬을 입력해주세요", text: $name)
                 .frame(width: 200)
-            Button("검색") {
+            Button {
                 Task {
                     await searchPokemon()
                 }
+            } label: {
+                Text("검색")
+                    .foregroundStyle(Color(.blue))
             }.disabled(name.isEmpty || isLoading)
         }
         
