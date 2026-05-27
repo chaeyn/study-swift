@@ -12,17 +12,23 @@ struct User: Identifiable {
     let name: String
 }
 
+let users = [
+    User(name: "chaeyn"),
+    User(name: "jdw09"),
+    User(name: "gorani1231")
+]
+
 struct ContentView: View {
     @State private var count = 0
+    @State private var name = ""
 
-    let users = [
-        User(name: "chaeyn"),
-        User(name: "jdw09"),
-        User(name: "gorani1231")
-    ]
-    
     var body: some View {
         VStack(spacing: 20) {
+            VStack {
+                TextField("이름 입력", text: $name) // $name에서 $은 값에 연결된 상태를 의미
+                Text("안녕하세요 \(name)님!")
+            }
+            
             Text("\(count)")
             
             HStack {
@@ -49,30 +55,30 @@ struct ContentView: View {
         }
     }
     
-    // immutable (const)
-    let name = "chaeyn"
-
-    // mutable
-    var age = 18
-
-    // type
-    let name2: String = "chaeyn"
-    let age2: Int = 18
-
-    // optional
-    var name3: String?
-
-    func hello(name: String) -> String {
-        return "hello \(name)"
-    }
-
+//    // immutable (const)
+//    let name = "chaeyn"
+//
+//    // mutable
+//    var age = 18
+//
+//    // type
+//    let name2: String = "chaeyn"
+//    let age2: Int = 18
+//
+//    // optional
+//    var name3: String?
+//
+//    func hello(name: String) -> String {
+//        return "hello \(name)"
+//    }
+//
 //    print(hello(name: name))
-
-    enum NetworkState {
-        case loading
-        case success
-        case failure
-    }
+//
+//    enum NetworkState {
+//        case loading
+//        case success
+//        case failure
+//    }
 
 }
 
