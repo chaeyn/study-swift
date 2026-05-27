@@ -7,91 +7,80 @@
 
 import SwiftUI
 
-struct User: Identifiable {
-    let id = UUID()
+struct Pokemon: Decodable {
+    let id: Int
     let name: String
+    let image: String
+    let types: [String]
+    let height: Int
+    let weight: Int
+    let description: String
 }
 
-let users = [
-    User(name: "chaeyn"),
-    User(name: "jdw09"),
-    User(name: "gorani1231")
-]
-
 struct ContentView: View {
-    @State private var count = 0
     @State private var name = ""
-
+    @State private var pokemon: Pokemon?
+    @State private var isLoading: Bool = false
+    @State private var errorText: String?
+    
     var body: some View {
-        VStack(spacing: 20) {
+        HStack (spacing: 10) {
+            TextField("검색할 포켓몬을 입력해주세요", text: $name)
+                .frame(width: 200)
+            Button("검색") {
+                Task {
+                    await searchPokemon()
+                }
+            }.disabled(name.isEmpty || isLoading)
+        }
+        
+        if let errorText {
+            Text("\(errorText)")
+                .foregroundStyle(.red)
+        }
+        
+        if let pokemon {
             VStack {
-                TextField("이름 입력", text: $name) // $name에서 $은 값에 연결된 상태를 의미
-                Text("안녕하세요 \(name)님!")
-            }
-            
-            Text("\(count)")
-            
-            HStack {
-                Button("-") {
-                    count -= 1
-                    print("minus 1")
+                AsyncImage(url: URL(string: pokemon.image)) { image in
+                    image.image
                 }
-                Button("+") {
-                    count += 1
-                    print("plus 1")
-                }
-            }
-            
-            HStack {
-                UserCard(name: "chaeyn")
-                UserCard(name: "jdw09")
-            }
-            
-            VStack {
-                ForEach(users) { user in
-                    Text(user.name)
-                }
+                
+                Text("\(pokemon.name)")
+                    .font(.title2)
+                    .bold()
+                
+                Text("타입: \(pokemon.types.joined(separator: ", "))")
+                Text("키: \(pokemon.height)")
+                Text("몸무게: \(pokemon.weight)")
+                Text(pokemon.description)
+                .multilineTextAlignment(.center)
             }
         }
     }
     
-//    // immutable (const)
-//    let name = "chaeyn"
-//
-//    // mutable
-//    var age = 18
-//
-//    // type
-//    let name2: String = "chaeyn"
-//    let age2: Int = 18
-//
-//    // optional
-//    var name3: String?
-//
-//    func hello(name: String) -> String {
-//        return "hello \(name)"
-//    }
-//
-//    print(hello(name: name))
-//
-//    enum NetworkState {
-//        case loading
-//        case success
-//        case failure
-//    }
+    func searchPokemon() async {
+        isLoading = true
+        errorText = ""
+        
+        do {
+            pokemon = try await fetchPokemon(name: name)
+        } catch {
+            errorText = "포켓몬을 찾을 수 없습니다."
+        }
+        
+        isLoading = false
+    }
 
-}
-
-struct UserCard: View {
-    let name: String
-    
-    var body: some View {
-        Text(name)
+    func fetchPokemon(name: String) async throws -> Pokemon {
+        let encodedName = name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? name
+        let url = URL(string: "https://pokemon-api.chaeyn.com/pokemon?name=\(encodedName)")!
+        
+        let (data, _) = try await URLSession.shared.data(from: url)
+        return try JSONDecoder().decode(Pokemon.self, from: data)
     }
 }
 
-
 #Preview {
     ContentView()
-        .frame(width: 800, height: 500)
+        .frame(width: 800, height: 1200)
 }
