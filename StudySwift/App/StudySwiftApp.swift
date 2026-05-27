@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct InnoLiveApp: App {
+struct StudySwiftApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
