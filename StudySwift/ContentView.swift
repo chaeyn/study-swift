@@ -72,10 +72,14 @@ struct ContentView: View {
     }
 
     func fetchPokemon(name: String) async throws -> Pokemon {
-        let encodedName = name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? name
-        let url = URL(string: "https://pokemon-api.chaeyn.com/pokemon?name=\(encodedName)")!
+        var components = URLComponents(string: "https://pokemon-api.chaeyn.com/pokemon")!
         
-        let (data, _) = try await URLSession.shared.data(from: url)
+        components.queryItems = [
+            URLQueryItem(name: "name", value: name)
+        ]
+
+        let (data, _) = try await URLSession.shared.data(from: components.url!)
+
         return try JSONDecoder().decode(Pokemon.self, from: data)
     }
 }
