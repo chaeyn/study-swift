@@ -7,8 +7,19 @@
 
 import SwiftUI
 
+struct User: Identifiable {
+    let id = UUID()
+    let name: String
+}
+
 struct ContentView: View {
     @State private var count = 0
+
+    let users = [
+        User(name: "chaeyn"),
+        User(name: "jdw09"),
+        User(name: "gorani1231")
+    ]
     
     var body: some View {
         VStack(spacing: 20) {
@@ -17,15 +28,23 @@ struct ContentView: View {
             HStack {
                 Button("-") {
                     count -= 1
+                    print("minus 1")
                 }
                 Button("+") {
                     count += 1
+                    print("plus 1")
                 }
             }
             
             HStack {
                 UserCard(name: "chaeyn")
                 UserCard(name: "jdw09")
+            }
+            
+            VStack {
+                ForEach(users) { user in
+                    Text(user.name)
+                }
             }
         }
     }
@@ -42,11 +61,6 @@ struct ContentView: View {
 
     // optional
     var name3: String?
-
-    // 값 복사 기반 구조체
-    struct User {
-        let name: String
-    }
 
     func hello(name: String) -> String {
         return "hello \(name)"
